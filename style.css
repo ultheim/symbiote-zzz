@@ -612,6 +612,117 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
     }
 }
 
+/* --- ENTITY FLOATING DECK (STACKED MODE) --- */
+#entity-deck-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 150px; /* Space between different entities */
+    z-index: 40; /* Below overlays, above canvas */
+    pointer-events: none;
+    perspective: 1000px;
+}
+
+/* 1. Add Entry Animation */
+@keyframes deckEntry {
+    0% { opacity: 0; transform: translateY(100px) scale(0.9); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.entity-stack {
+    position: relative;
+    width: 240px;
+    height: 340px;
+    pointer-events: auto;
+    
+    /* ADDED: Smooth Entry/Exit transitions */
+    animation: deckEntry 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    
+    cursor: pointer;
+}
+
+/* ADDED: Class to trigger smooth removal */
+.entity-stack.dissolving {
+    opacity: 0 !important;
+    transform: translateY(-50px) scale(0.95) !important;
+    pointer-events: none;
+}
+
+/* The name label floating above the stack */
+.entity-stack-label {
+    position: absolute;
+    top: -40px;
+    width: 100%;
+    text-align: center;
+    color: #ff7300;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+    text-shadow: 0 0 10px rgba(0,0,0,0.8);
+    opacity: 0.8;
+    letter-spacing: 2px;
+}
+
+/* Individual Card Wrapper (Transparent container) */
+.entity-card-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    /* Flexbox centers the image regardless of its ratio */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* Remove framing from the wrapper */
+    background: transparent; 
+    border: none;
+    box-shadow: none;
+    overflow: visible; 
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* The Image IS the Card now */
+.entity-card-item img {
+    /* Maintain Original Ratio */
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Ensures no cropping */
+    
+    /* Card Aesthetics apply to the image itself */
+    background: #000;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.8); /* Depth shadow */
+    
+    opacity: 1; /* Default opacity */
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Hover effect for the whole stack */
+/* Highlight the top image on hover */
+.entity-stack:hover .entity-card-item:nth-child(1) img {
+    border-color: #ff7300;
+    box-shadow: 0 0 25px rgba(255, 115, 0, 0.4);
+}
+
+/* Ensure the wrapper doesn't get the border */
+.entity-stack:hover .entity-card-item:nth-child(1) {
+    border-color: transparent;
+    box-shadow: none;
+}
+
+
 /* --- MOBILE OPTIMIZATIONS (iPhone/Android) --- */
 @media (max-width: 768px) {
     /* 1. Make the container scrollable horizontally */
